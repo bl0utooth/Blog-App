@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit</title>
+</head>
+<body>
+    <h1>Edit Post</h1>
+
+    <form method="POST" action="/posts/{{post.id}}/edit">
+        
+        <div class="form-group row">
+            <label for="title">Title</label>
+            <div>
+              <input id="title" name="title" value="{{ post.title }}">
+            </div>
+        </div>
+        
+        <div>
+            <label for="content">Post Content</label>
+            <div>
+              <textarea id="content" name="content">{{ post.content }}</textarea>
+            </div>
+        </div>
+        
+        <div>
+            <div>
+              <a href="/users/{{ post.user_id }}">
+                Cancel
+              </a>
+              <button type="submit">
+                Edit
+              </button>
+            </div>
+        </div>
+        
+    </form>
+
+    
+</body>
+</html>
