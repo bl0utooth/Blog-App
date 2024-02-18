@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>show</title>
+</head>
+<body>
+    <div>
+        <div>
+          <img src="{{ user.image_url }}"
+               alt="{{ user.full_name }}"
+               class="img-fluid">
+        </div>
+      
+        <div>
+          <h1>{{ user.full_name }}</h1>
+      
+          <form>
+            <button
+                    formaction="/users/{{ user.id }}/edit"
+                    formmethod="GET">Edit
+            </button>
+            <button
+                    formaction="/users/{{ user.id }}/delete"
+                    formmethod="POST">Delete
+            </button>
+          </form>
+
+          <h2 class="mt-4">Posts</h2>
+
+    <ul>
+      <li>
+        <a href="/posts/{{ post.id}}">{{ post.title }}</a>
+        <small>{{ post.friendly_date }}</small>
+      </li>
+    </ul>
+
+    <p><a href="/users/{{ user.id }}/posts/new">Add Post</a></p>
+      
+        </div>
+      </div>
+      
+</body>
+</html>
