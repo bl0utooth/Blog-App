@@ -2,10 +2,9 @@
 
 from flask import Flask, request, redirect, render_template
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post 
+from models import db, connect_db, User, Post, tag
 
 app = Flask(__name__)
-
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_app_db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,7 +22,7 @@ db.create_all()
 def root():
     return redirect("/users")
 
-
+# Python: User Route
 
 @app.route('/users')
 def users_index():
@@ -83,6 +82,7 @@ def users_destroy(user_id):
     return redirect("/users")
 
 
+# Python: Post Route
 
 @app.route('/users/<int:user_id>/posts/new')
 def post_new_form(user_id):
@@ -129,3 +129,62 @@ def delete_post(post_id):
     flash(f"Post: '{post.title}' has been deleted.")
 
     return redirect(f"/users/{post.user_id}")
+
+
+# Python: Tag Route 
+
+@app.route('/tags')
+def post_tags():
+    tags = Tag.query.all()
+    return render_template('tags/index.html', tags = tags)
+
+@app.route('/tags/new')
+def tag_form():
+    posts = Post.query.all()
+    return render_template('tags/new.html', posts = posts)
+
+@app.route('/tags/new', methods=['POSTS'])
+def new_tags():
+    post_ids = [int(num) for num in request.form.getlist('posts')]
+    posts = Post.query.filter(Post.id.in_(post_ids)).all()
+    new_tag = Tag(name = request.form['name'], posts = posts)
+
+    db.session.add(new_tag)
+    db.session.commit()
+    flash(f'Tag '{new_tag.name}' has been added.')
+
+    return redirect('/tags')
+
+@app.route('/tags/<int:tag_id>')
+def show_tags(tag_id):
+    tag = Tag.query.get_or_404(tag_id)
+    return render_template('tags/show.html', tag = tag)
+
+@app.route('/tags/<int:tag_id>/delete', methods=['POSTS'])
+def delete_tags(tag_id):
+    tag = Tag.query.get_or_404(tag_id)
+    db.session.delete(tag)
+    db.session.commit()
+    flash(f'Tag '{tag.name}' has been deleted.')
+
+    return redirect('/tags')
+
+@app.route('/tags/<int:tag_id>/edit')
+def edit_tags_form(tag_id):
+    tag = Tag.query.get_or_404(tag_id)
+    posts = Post.query.all()
+    return render_template('tags/edit.html', tag = tag, posts = posts)
+
+@app.route('/tags/<int:tag_id>/edit', methods = ['POST'])
+def edit_tags(tag_id):
+    tag = Tag.qeury.get_or_404(tag_id)
+    tag.name = request.form['name']
+    post_ids = [int(num) for num in request.form.getlist('posts')]
+    tag.posts = Post.query.filter(Post.id.in_(post_ids)).all()
+
+    db.session.add(tag)
+    db.session.commit()
+    flash(f'Tag '{tag.name}' has been edited.')
+
+    return redirect('/tags')
+
